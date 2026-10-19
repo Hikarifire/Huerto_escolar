@@ -17,7 +17,7 @@ abstract class BaseHuerto : RoomDatabase() {
                 val baseNueva = baseAbierta ?: Room.databaseBuilder(
                     contextoAplicacion.applicationContext,
                     BaseHuerto::class.java,
-                    "huerto_db.db"
+                    "registro_huerto_escolar.db"
                 ).build()
                 baseAbierta = baseNueva
                 baseNueva

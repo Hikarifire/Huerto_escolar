@@ -19,9 +19,16 @@ import cl.duoc.fotomotion.ui.components.*
 fun PantallaAcceso(controlAcceso: AccesoViewModel, alIngresar: (CuentaHuerto) -> Unit) {
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item {
-            Text("Cuidamos nuestro huerto", style = MaterialTheme.typography.headlineSmall)
-            Text("Organiza sectores, cultivos y tareas del taller.")
-            Text("Elige un perfil de demostración. No se usan contraseñas ni cuentas reales.")
+            Surface(color = MaterialTheme.colorScheme.primaryContainer,
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)) {
+                Column(Modifier.fillMaxWidth().padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text("Huerto en acción", style = MaterialTheme.typography.headlineSmall)
+                    Text("Organiza y acompaña las actividades del taller.")
+                    Text("Selecciona un perfil de prueba para comenzar.",
+                        style = MaterialTheme.typography.bodySmall)
+                }
+            }
         }
         items(controlAcceso.cuentasPrueba) { cuenta ->
             Card(modifier = Modifier.fillMaxWidth()) {

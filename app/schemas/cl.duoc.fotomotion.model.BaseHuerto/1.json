@@ -5,7 +5,7 @@
     "identityHash": "0f4f8e93de6d264ee9afdd4eb072f488",
     "entities": [
       {
-        "tableName": "sectores",
+        "tableName": "zonas_huerto",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nombre` TEXT NOT NULL, `descripcion` TEXT NOT NULL, `ubicacion` TEXT NOT NULL, `estado` TEXT NOT NULL, `responsableId` TEXT NOT NULL, `fechaCreacion` TEXT NOT NULL, `fechaActualizacion` TEXT NOT NULL)",
         "fields": [
           {
@@ -65,7 +65,7 @@
         }
       },
       {
-        "tableName": "cultivos",
+        "tableName": "plantaciones",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nombreComun` TEXT NOT NULL, `descripcion` TEXT NOT NULL, `sectorId` INTEGER NOT NULL, `fechaSiembra` TEXT, `fechaTrasplante` TEXT, `fechaEstimadaCosecha` TEXT, `frecuenciaRiegoDias` INTEGER NOT NULL, `estado` TEXT NOT NULL, `observaciones` TEXT NOT NULL, `fotografiaReferencialFicticia` TEXT)",
         "fields": [
           {
@@ -139,7 +139,7 @@
         }
       },
       {
-        "tableName": "tareas",
+        "tableName": "actividades_huerto",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tipo` TEXT NOT NULL, `descripcion` TEXT NOT NULL, `sectorId` INTEGER NOT NULL, `cultivoId` INTEGER, `fechaCreacion` TEXT NOT NULL, `fechaProgramada` TEXT NOT NULL, `responsableId` TEXT NOT NULL, `creadorId` TEXT NOT NULL, `estado` TEXT NOT NULL, `fechaHoraRealizacion` TEXT, `fotografiaAdjunta` TEXT, `comentarioEstudiante` TEXT, `comentarioDocente` TEXT, `validadorId` TEXT, `fechaHoraValidacion` TEXT)",
         "fields": [
           {

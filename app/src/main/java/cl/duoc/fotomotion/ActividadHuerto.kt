@@ -16,8 +16,8 @@ class ActividadHuerto : ComponentActivity() {
         super.onCreate(estadoGuardado)
         enableEdgeToEdge()
         setContent {
-            MaterialTheme(colorScheme = lightColorScheme(primary = Color(0xFF356B45),
-                secondary = Color(0xFF765B36), background = Color(0xFFFAFCF7))) {
+            MaterialTheme(colorScheme = lightColorScheme(primary = Color(0xFF397B72),
+                secondary = Color(0xFFC28B57), background = Color(0xFFF7FAF8))) {
                 RecorridoHuerto()
             }
         }

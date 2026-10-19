@@ -2,7 +2,7 @@ package cl.duoc.fotomotion.model
 
 import androidx.room.*
 
-@Entity(tableName = "cultivos")
+@Entity(tableName = "plantaciones")
 data class SiembraHuerto(
 
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val codigoSiembra: Int = 0,

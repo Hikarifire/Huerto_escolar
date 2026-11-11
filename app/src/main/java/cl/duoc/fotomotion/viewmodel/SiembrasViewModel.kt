@@ -1,10 +1,11 @@
-package cl.duoc.fotomotion.viewmodel
+package cl.duoc.fotomotion.ui.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import cl.duoc.fotomotion.model.*
-import cl.duoc.fotomotion.repository.RepositorioHuerto
+import cl.duoc.fotomotion.data.local.BaseHuerto
+import cl.duoc.fotomotion.data.repository.RepositorioHuerto
+import cl.duoc.fotomotion.domain.model.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

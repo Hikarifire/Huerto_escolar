@@ -1,10 +1,9 @@
-package cl.duoc.fotomotion.model
+package cl.duoc.fotomotion.domain.model
 
 import androidx.room.*
 
 @Entity(tableName = "actividades_huerto")
 data class LaborHuerto(
-
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val codigoLabor: Int = 0,
     @ColumnInfo(name = "tipo") val claseLabor: String = "",
     @ColumnInfo(name = "descripcion") val detalleLabor: String = "",
@@ -20,5 +19,5 @@ data class LaborHuerto(
     @ColumnInfo(name = "comentarioEstudiante") val notaEntrega: String? = null,
     @ColumnInfo(name = "comentarioDocente") val notaRevision: String? = null,
     @ColumnInfo(name = "validadorId") val revisorLabor: String? = null,
-    @ColumnInfo(name = "fechaHoraValidacion") val momentoRevision: String? = null
+    @ColumnInfo(name = "fechaHoraValidacion") val momentoRevision: String? = null,
 )

@@ -12,9 +12,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import cl.duoc.fotomotion.model.*
-import cl.duoc.fotomotion.viewmodel.LaboresViewModel
+import cl.duoc.fotomotion.domain.model.*
 import cl.duoc.fotomotion.ui.components.*
+import cl.duoc.fotomotion.ui.viewmodel.LaboresViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -25,11 +25,21 @@ fun PantallaLabores(controlLabores: LaboresViewModel, cuentaEnSesion: CuentaHuer
     val posicionLista = rememberLazyListState()
     val accionesPantalla = rememberCoroutineScope()
 
+    val laboresVisibles = remember(datosVista.listaLabores, cuentaEnSesion) {
+        if (permiteRevision) {
+            datosVista.listaLabores
+        } else {
+            datosVista.listaLabores.filter { labor ->
+                labor.encargadoLabor.isBlank() || labor.encargadoLabor == cuentaEnSesion.codigoCuenta
+            }
+        }
+    }
+
     LazyColumn(state = posicionLista, contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { AvisoHuerto(datosVista.avisoLabores) }
         if (permiteRevision) item {
             Card(Modifier.fillMaxWidth().animateContentSize()) {
-                Column(Modifier.padding(16.dp)) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(if (datosVista.laborEnEdicion == null) "Nueva tarea" else "Editar tarea", style = MaterialTheme.typography.titleMedium)
                     CampoHuerto(datosVista.textoDetalle, "Descripción de la tarea", datosVista.errorDetalle,
                         controlLabores::escribirDetalle, !datosVista.guardandoLabor)
@@ -37,6 +47,8 @@ fun PantallaLabores(controlLabores: LaboresViewModel, cuentaEnSesion: CuentaHuer
                         controlLabores::escribirFecha, !datosVista.guardandoLabor)
                     ElegirSector(datosVista.sectoresDisponibles, datosVista.sectorTrabajo, datosVista.errorSector,
                         controlLabores::elegirSectorTrabajo, !datosVista.guardandoLabor)
+                    ElegirEstudiante(datosVista.estudiantesDisponibles, datosVista.estudianteAsignado, datosVista.errorEstudiante,
+                        controlLabores::elegirEstudianteEncargado, !datosVista.guardandoLabor)
                     Button(onClick = { controlLabores.confirmarLabor(cuentaEnSesion) }, enabled = !datosVista.guardandoLabor) { Text("Guardar tarea") }
                     if (datosVista.laborEnEdicion != null) TextButton(onClick = controlLabores::limpiarLabor, enabled = !datosVista.guardandoLabor) { Text("Cancelar edición") }
                 }
@@ -62,13 +74,17 @@ fun PantallaLabores(controlLabores: LaboresViewModel, cuentaEnSesion: CuentaHuer
             }
         }
         item { Text("Tareas registradas", style = MaterialTheme.typography.titleLarge) }
-        if (datosVista.listaLabores.isEmpty()) item { Text("Todavía no hay tareas. Ingresa como docente para crear una.") }
-        items(datosVista.listaLabores, key = { labor -> labor.codigoLabor }) { labor ->
+        if (laboresVisibles.isEmpty()) item {
+            Text(if (permiteRevision) "Todavía no hay tareas. Ingresa como docente para crear una." else "No tienes tareas asignadas por el momento.")
+        }
+        items(laboresVisibles, key = { labor -> labor.codigoLabor }) { labor ->
             Card(Modifier.fillMaxWidth().animateContentSize()) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(labor.detalleLabor, style = MaterialTheme.typography.titleMedium)
                     val nombreSector = datosVista.sectoresDisponibles.find { parcela -> parcela.codigoParcela == labor.parcelaTrabajo }?.tituloParcela ?: "Sector no disponible"
+                    val nombreEstudiante = datosVista.estudiantesDisponibles.find { estudiante -> estudiante.codigoCuenta == labor.encargadoLabor }?.nombreCuenta ?: "Estudiante ${labor.encargadoLabor}"
                     Text("Sector: $nombreSector · ${labor.diaPlanificado}")
+                    Text("Asignado a: $nombreEstudiante")
                     Text("Estado: " + when (labor.situacionLabor) {
                         "VALIDADA" -> "Aprobada"
                         "RECHAZADA" -> "Requiere corrección"

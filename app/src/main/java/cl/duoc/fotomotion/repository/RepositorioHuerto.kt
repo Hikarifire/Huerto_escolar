@@ -1,6 +1,9 @@
-package cl.duoc.fotomotion.repository
+package cl.duoc.fotomotion.data.repository
 
-import cl.duoc.fotomotion.model.*
+import cl.duoc.fotomotion.data.local.ConsultasHuerto
+import cl.duoc.fotomotion.domain.model.LaborHuerto
+import cl.duoc.fotomotion.domain.model.ParcelaHuerto
+import cl.duoc.fotomotion.domain.model.SiembraHuerto
 
 class RepositorioHuerto(private val consultasGuardadas: ConsultasHuerto) {
     fun leerParcelas() = consultasGuardadas.observarParcelas()

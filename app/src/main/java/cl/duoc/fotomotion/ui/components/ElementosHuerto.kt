@@ -1,7 +1,7 @@
 package cl.duoc.fotomotion.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.*
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -13,11 +13,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import cl.duoc.fotomotion.R
-import cl.duoc.fotomotion.model.ParcelaHuerto
-import androidx.compose.ui.res.painterResource
+import cl.duoc.fotomotion.domain.model.CuentaHuerto
+import cl.duoc.fotomotion.domain.model.ParcelaHuerto
 
 @Composable
 fun CampoHuerto(valorCampo: String, etiquetaCampo: String, mensajeCampo: String,
@@ -32,7 +33,11 @@ fun CampoHuerto(valorCampo: String, etiquetaCampo: String, mensajeCampo: String,
 
 @Composable
 fun AvisoHuerto(textoAviso: String) {
-    AnimatedVisibility(visible = textoAviso.isNotBlank()) {
+    AnimatedVisibility(
+        visible = textoAviso.isNotBlank(),
+        enter = fadeIn() + expandVertically(spring()),
+        exit = fadeOut() + shrinkVertically(spring())
+    ) {
         Card(modifier = Modifier.fillMaxWidth().animateContentSize()) {
             Text(textoAviso, modifier = Modifier.padding(12.dp))
         }
@@ -49,6 +54,26 @@ fun ElegirSector(listaOpciones: List<ParcelaHuerto>, codigoSeleccionado: Int?,
             FilterChip(selected = codigoSeleccionado == parcela.codigoParcela,
                 onClick = { alSeleccionar(parcela.codigoParcela) }, enabled = habilitado,
                 label = { Text(parcela.tituloParcela) })
+        }
+    }
+    if (mensajeSeleccion.isNotEmpty()) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Icon(Icons.Default.Warning, contentDescription = "Error de selección", tint = MaterialTheme.colorScheme.error)
+            Text(mensajeSeleccion, color = MaterialTheme.colorScheme.error)
+        }
+    }
+}
+
+@Composable
+fun ElegirEstudiante(listaOpciones: List<CuentaHuerto>, codigoSeleccionado: String?,
+    mensajeSeleccion: String, alSeleccionar: (String) -> Unit, habilitado: Boolean = true) {
+    Text("Estudiante asignado", style = MaterialTheme.typography.labelLarge)
+    if (listaOpciones.isEmpty()) Text("No hay estudiantes registrados.")
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        items(listaOpciones, key = { estudiante -> estudiante.codigoCuenta }) { estudiante ->
+            FilterChip(selected = codigoSeleccionado == estudiante.codigoCuenta,
+                onClick = { alSeleccionar(estudiante.codigoCuenta) }, enabled = habilitado,
+                label = { Text(estudiante.nombreCuenta) })
         }
     }
     if (mensajeSeleccion.isNotEmpty()) {

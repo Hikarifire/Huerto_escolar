@@ -3,7 +3,7 @@ package cl.duoc.fotomotion
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import cl.duoc.fotomotion.model.BaseHuerto
+import cl.duoc.fotomotion.data.local.BaseHuerto
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -66,7 +66,7 @@ class PruebaFormularios {
             pantallaPrueba.onAllNodesWithText("Tarea guardada.").fetchSemanticsNodes().isNotEmpty()
         }
         pantallaPrueba.onNodeWithText("Salir").performClick()
-        pantallaPrueba.onNodeWithText("Ingresar como estudiante").performClick()
+        pantallaPrueba.onAllNodesWithText("Ingresar como estudiante").onFirst().performClick()
         pantallaPrueba.onNodeWithText("Guardar sector").assertDoesNotExist()
         pantallaPrueba.onNodeWithText("Tareas").performClick()
         pantallaPrueba.onAllNodesWithText("Realizar tarea").onFirst().performScrollTo().performClick()

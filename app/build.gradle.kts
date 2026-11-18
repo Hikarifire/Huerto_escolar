@@ -59,6 +59,8 @@ dependencies {
 
     implementation(libs.coil.compose)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
 
     testImplementation(libs.junit)
     testImplementation("junit:junit:4.13.2")

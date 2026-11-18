@@ -54,10 +54,6 @@ fun PantallaAcceso(controlAcceso: AccesoViewModel, alIngresar: (CuentaHuerto) ->
                                     controlAcceso.iniciarSesionPorBusqueda()?.let(alIngresar)
                                 },
                             )
-                            Text("O selecciona una cuenta registrada", style = MaterialTheme.typography.titleMedium)
-                            estadoVista.cuentasDisponibles.forEach { cuenta ->
-                                TarjetaCuentaItem(cuenta = cuenta, alIngresar = alIngresar)
-                            }
                         }
                     }
                     ModoAcceso.REGISTRO -> {
@@ -72,14 +68,7 @@ fun PantallaAcceso(controlAcceso: AccesoViewModel, alIngresar: (CuentaHuerto) ->
                             },
                         )
                     }
-                    ModoAcceso.RAPIDO -> {
-                        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                            Text("Selección rápida de perfiles", style = MaterialTheme.typography.titleMedium)
-                            estadoVista.cuentasDisponibles.forEach { cuenta ->
-                                TarjetaCuentaItem(cuenta = cuenta, alIngresar = alIngresar)
-                            }
-                        }
-                    }
+
                 }
             }
         }
@@ -146,11 +135,6 @@ private fun TabRowAcceso(
             selected = modoActual == ModoAcceso.REGISTRO,
             onClick = { onModoSelected(ModoAcceso.REGISTRO) },
             text = { Text("Registrarse") },
-        )
-        Tab(
-            selected = modoActual == ModoAcceso.RAPIDO,
-            onClick = { onModoSelected(ModoAcceso.RAPIDO) },
-            text = { Text("Ver Todos") },
         )
     }
 }
@@ -291,54 +275,4 @@ private fun SeccionRegistroUsuario(
     }
 }
 
-@Composable
-private fun TarjetaCuentaItem(cuenta: CuentaHuerto, alIngresar: (CuentaHuerto) -> Unit) {
-    val esDocente = cuenta.tipoCuenta == TipoCuenta.DOCENTE
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    cuenta.nombreCuenta,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                )
-                AssistChip(
-                    onClick = {},
-                    label = { Text(if (esDocente) "DOCENTE" else "ALUMNO") },
-                    colors = AssistChipDefaults.assistChipColors(
-                        containerColor = if (esDocente) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer,
-                        labelColor = if (esDocente) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSecondaryContainer,
-                    ),
-                )
-            }
-            Text(
-                if (esDocente)
-                    "Administra sectores, cultivos y revisa tareas (${cuenta.codigoCuenta})."
-                else
-                    "Consulta tareas asignadas y sube tu evidencia (${cuenta.codigoCuenta}).",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Button(
-                onClick = { alIngresar(cuenta) },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (esDocente) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
-                ),
-            ) {
-                Text(
-                    if (esDocente) "Ingresar como docente" else "Ingresar como estudiante",
-                )
-            }
-        }
-    }
-}
+

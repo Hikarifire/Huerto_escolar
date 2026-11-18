@@ -12,32 +12,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.format.DateTimeParseException
-
-data class EstadoLabores(
-    val listaLabores: List<LaborHuerto> = emptyList(),
-    val sectoresDisponibles: List<ParcelaHuerto> = emptyList(),
-    val estudiantesDisponibles: List<CuentaHuerto> = emptyList(),
-    val estudianteAsignado: String = "USR-002",
-    val textoDetalle: String = "",
-    val textoFecha: String = LocalDate.now().toString(),
-    val sectorTrabajo: Int? = null,
-    val errorDetalle: String = "",
-    val errorFecha: String = "",
-    val errorSector: String = "",
-    val errorEstudiante: String = "",
-    val laborEnEdicion: LaborHuerto? = null,
-    val laborEnEntrega: LaborHuerto? = null,
-    val direccionFoto: String = "",
-    val textoComentario: String = "",
-    val errorFoto: String = "",
-    val errorComentario: String = "",
-    val avisoLabores: String = "",
-    val guardandoLabor: Boolean = false,
-)
 
 class LaboresViewModel(aplicacion: Application) : AndroidViewModel(aplicacion) {
     private val repositorio = RepositorioHuerto(BaseHuerto.abrirBase(aplicacion).consultasHuerto())
+    private val validadorLabores = ValidadorLabores()
     private val estadoMutable = MutableStateFlow(EstadoLabores())
     val estadoLabores = estadoMutable.asStateFlow()
 
@@ -76,30 +54,20 @@ class LaboresViewModel(aplicacion: Application) : AndroidViewModel(aplicacion) {
 
     fun revisarLabor(): Boolean {
         val formulario = estadoMutable.value
-        var problemaDetalle = ""
-        var problemaFecha = ""
-        var problemaSector = ""
-        var problemaEstudiante = ""
-        if (formulario.textoDetalle.isBlank()) problemaDetalle = "Explica qué hay que hacer."
-        else if (formulario.textoDetalle.trim().length < 5 || formulario.textoDetalle.length > 150)
-            problemaDetalle = "Usa entre 5 y 150 caracteres."
-        if (formulario.textoFecha.isBlank()) problemaFecha = "Escribe una fecha."
-        else if (formulario.textoFecha.length != 10) problemaFecha = "Usa el formato AAAA-MM-DD."
-        else {
-            try { LocalDate.parse(formulario.textoFecha) }
-            catch (_: DateTimeParseException) { problemaFecha = "Escribe una fecha real: AAAA-MM-DD." }
-        }
-        if (formulario.sectorTrabajo == null) problemaSector = "Selecciona el sector de la tarea."
-        else if (formulario.sectoresDisponibles.none { parcela -> parcela.codigoParcela == formulario.sectorTrabajo })
-            problemaSector = "El sector ya no está disponible."
-        if (formulario.estudianteAsignado.isBlank()) problemaEstudiante = "Selecciona un estudiante para la tarea."
-        estadoMutable.value = formulario.copy(
-            errorDetalle = problemaDetalle,
-            errorFecha = problemaFecha,
-            errorSector = problemaSector,
-            errorEstudiante = problemaEstudiante,
+        val resultado = validadorLabores.validarLabor(
+            textoDetalle = formulario.textoDetalle,
+            textoFecha = formulario.textoFecha,
+            sectorTrabajo = formulario.sectorTrabajo,
+            sectoresDisponibles = formulario.sectoresDisponibles,
+            estudianteAsignado = formulario.estudianteAsignado
         )
-        return problemaDetalle.isEmpty() && problemaFecha.isEmpty() && problemaSector.isEmpty() && problemaEstudiante.isEmpty()
+        estadoMutable.value = formulario.copy(
+            errorDetalle = resultado.errorDetalle,
+            errorFecha = resultado.errorFecha,
+            errorSector = resultado.errorSector,
+            errorEstudiante = resultado.errorEstudiante,
+        )
+        return resultado.esValido
     }
 
     fun confirmarLabor(cuentaResponsable: CuentaHuerto) {
@@ -177,14 +145,12 @@ class LaboresViewModel(aplicacion: Application) : AndroidViewModel(aplicacion) {
 
     fun revisarEntrega(): Boolean {
         val formulario = estadoMutable.value
-        var problemaFoto = ""
-        var problemaComentario = ""
-        if (formulario.direccionFoto.isBlank()) problemaFoto = "Adjunta una foto con cámara o galería."
-        if (formulario.textoComentario.isBlank()) problemaComentario = "Cuenta qué hiciste en el huerto."
-        else if (formulario.textoComentario.trim().length < 5 || formulario.textoComentario.length > 300)
-            problemaComentario = "Usa entre 5 y 300 caracteres."
-        estadoMutable.value = formulario.copy(errorFoto = problemaFoto, errorComentario = problemaComentario)
-        return problemaFoto.isEmpty() && problemaComentario.isEmpty()
+        val resultado = validadorLabores.validarEntrega(
+            direccionFoto = formulario.direccionFoto,
+            textoComentario = formulario.textoComentario
+        )
+        estadoMutable.value = formulario.copy(errorFoto = resultado.errorFoto, errorComentario = resultado.errorComentario)
+        return resultado.esValido
     }
 
     fun entregarLabor(cuentaResponsable: CuentaHuerto) {

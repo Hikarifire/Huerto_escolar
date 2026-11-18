@@ -12,20 +12,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-data class EstadoSiembras(
-    val listaSiembras: List<SiembraHuerto> = emptyList(),
-    val opcionesParcela: List<ParcelaHuerto> = emptyList(),
-    val textoSiembra: String = "",
-    val parcelaElegida: Int? = null,
-    val errorSiembra: String = "",
-    val errorSeleccion: String = "",
-    val siembraEnEdicion: SiembraHuerto? = null,
-    val avisoSiembras: String = "",
-    val guardandoSiembra: Boolean = false
-)
-
 class SiembrasViewModel(aplicacion: Application) : AndroidViewModel(aplicacion) {
     private val repositorio = RepositorioHuerto(BaseHuerto.abrirBase(aplicacion).consultasHuerto())
+    private val validadorSiembras = ValidadorSiembras()
     private val estadoMutable = MutableStateFlow(EstadoSiembras())
     val estadoSiembras = estadoMutable.asStateFlow()
 
@@ -49,16 +38,9 @@ class SiembrasViewModel(aplicacion: Application) : AndroidViewModel(aplicacion) 
     }
     fun revisarSiembra(): Boolean {
         val formulario = estadoMutable.value
-        var problemaNombre = ""
-        var problemaSeleccion = ""
-        if (formulario.textoSiembra.isBlank()) problemaNombre = "Escribe el nombre del cultivo."
-        else if (formulario.textoSiembra.trim().length < 3 || formulario.textoSiembra.length > 40)
-            problemaNombre = "Usa entre 3 y 40 caracteres."
-        if (formulario.parcelaElegida == null) problemaSeleccion = "Selecciona un sector."
-        else if (formulario.opcionesParcela.none { parcela -> parcela.codigoParcela == formulario.parcelaElegida })
-            problemaSeleccion = "El sector ya no está disponible."
-        estadoMutable.value = formulario.copy(errorSiembra = problemaNombre, errorSeleccion = problemaSeleccion)
-        return problemaNombre.isEmpty() && problemaSeleccion.isEmpty()
+        val resultado = validadorSiembras.validarSiembra(formulario.textoSiembra, formulario.parcelaElegida, formulario.opcionesParcela)
+        estadoMutable.value = formulario.copy(errorSiembra = resultado.errorSiembra, errorSeleccion = resultado.errorSeleccion)
+        return resultado.esValido
     }
     fun confirmarSiembra() {
         if (estadoMutable.value.guardandoSiembra || !revisarSiembra()) return

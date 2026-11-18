@@ -12,19 +12,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-data class EstadoParcelas(
-    val listaParcelas: List<ParcelaHuerto> = emptyList(),
-    val textoParcela: String = "",
-    val textoLugar: String = "",
-    val errorParcela: String = "",
-    val errorLugar: String = "",
-    val parcelaEnEdicion: ParcelaHuerto? = null,
-    val avisoParcelas: String = "",
-    val guardandoParcela: Boolean = false
-)
-
 class ParcelasViewModel(aplicacion: Application) : AndroidViewModel(aplicacion) {
     private val repositorio = RepositorioHuerto(BaseHuerto.abrirBase(aplicacion).consultasHuerto())
+    private val validadorParcelas = ValidadorParcelas()
     private val estadoMutable = MutableStateFlow(EstadoParcelas())
     val estadoParcelas = estadoMutable.asStateFlow()
 
@@ -45,20 +35,9 @@ class ParcelasViewModel(aplicacion: Application) : AndroidViewModel(aplicacion) 
 
     fun revisarParcela(): Boolean {
         val formulario = estadoMutable.value
-        var problemaNombre = ""
-        var problemaLugar = ""
-        if (formulario.textoParcela.isBlank()) {
-            problemaNombre = "Escribe el nombre del sector."
-        } else if (formulario.textoParcela.trim().length < 3 || formulario.textoParcela.length > 40) {
-            problemaNombre = "Usa entre 3 y 40 caracteres."
-        }
-        if (formulario.textoLugar.isBlank()) {
-            problemaLugar = "Escribe dónde está el sector."
-        } else if (formulario.textoLugar.trim().length < 3 || formulario.textoLugar.length > 80) {
-            problemaLugar = "Usa entre 3 y 80 caracteres."
-        }
-        estadoMutable.value = formulario.copy(errorParcela = problemaNombre, errorLugar = problemaLugar)
-        return problemaNombre.isEmpty() && problemaLugar.isEmpty()
+        val resultado = validadorParcelas.validarParcela(formulario.textoParcela, formulario.textoLugar)
+        estadoMutable.value = formulario.copy(errorParcela = resultado.errorParcela, errorLugar = resultado.errorLugar)
+        return resultado.esValido
     }
 
     fun confirmarParcela() {

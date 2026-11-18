@@ -1,6 +1,7 @@
 [versions]
 agp = "9.0.1"
 kotlin = "2.2.10"
+kover = "0.9.11"
 ksp = "2.2.10-2.0.2"
 coreKtx = "1.16.0"
 junit = "4.13.2"
@@ -43,3 +44,4 @@ androidx-test-runner = { module = "androidx.test:runner", version = "1.7.0" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }

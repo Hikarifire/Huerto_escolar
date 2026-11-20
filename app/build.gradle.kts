@@ -5,6 +5,13 @@ plugins {
     alias(libs.plugins.kover)
 }
 
+val huertoUrl = providers.gradleProperty("huertoUrl").orElse("http://10.0.2.2:8080/").get()
+require(huertoUrl.none { it == '"' || it == '\\' || it.isWhitespace() } && huertoUrl.endsWith("/") && (huertoUrl.startsWith("http://") || huertoUrl.startsWith("https://"))) {
+    "huertoUrl debe ser una URL HTTP(S) con barra final."
+}
+val rutaLlave = providers.gradleProperty("huertoKeystore").orNull
+val claveDemo = providers.environmentVariable("HUERTO_KEY_PASSWORD").orNull
+
 android {
     namespace = "cl.duoc.fotomotion"
     compileSdk {
@@ -15,14 +22,27 @@ android {
         applicationId = "cl.duoc.fotomotion"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "2.0"
+        buildConfigField("String", "HUERTO_URL", "\"$huertoUrl\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        if (rutaLlave != null && claveDemo != null) {
+            create("academica") {
+                storeFile = rootProject.file(rutaLlave)
+                storePassword = claveDemo
+                keyAlias = "huerto-academico"
+                keyPassword = claveDemo
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.findByName("academica")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -37,6 +57,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -63,7 +84,6 @@ dependencies {
     implementation(libs.retrofit.converter.gson)
 
     testImplementation(libs.junit)
-    testImplementation("junit:junit:4.13.2")
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test)
     androidTestImplementation(libs.androidx.test.runner)
@@ -73,4 +93,19 @@ dependencies {
 }
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
+}
+
+kover {
+    reports {
+        filters {
+            includes {
+                classes("cl.duoc.fotomotion.domain.HuertoStore*", "cl.duoc.fotomotion.domain.Reglas*")
+            }
+        }
+        verify {
+            rule("Cobertura de lógica de aplicación") {
+                minBound(80)
+            }
+        }
+    }
 }

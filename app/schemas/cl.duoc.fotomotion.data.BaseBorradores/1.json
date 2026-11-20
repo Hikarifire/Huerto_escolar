@@ -1,0 +1,49 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "5b1824a9114807719346b206efbb6486",
+    "entities": [
+      {
+        "tableName": "borradores",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`usuario` INTEGER NOT NULL, `tarea` INTEGER NOT NULL, `comentario` TEXT NOT NULL, `foto` TEXT, PRIMARY KEY(`usuario`, `tarea`))",
+        "fields": [
+          {
+            "fieldPath": "usuario",
+            "columnName": "usuario",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tarea",
+            "columnName": "tarea",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "comentario",
+            "columnName": "comentario",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "foto",
+            "columnName": "foto",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "usuario",
+            "tarea"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5b1824a9114807719346b206efbb6486')"
+    ]
+  }
+}

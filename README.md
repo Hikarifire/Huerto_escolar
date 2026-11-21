@@ -8,17 +8,7 @@ Aplicación móvil para organizar sectores y cultivos, asignar tareas a estudian
 
 Kotlin, Jetpack Compose, Material Design 3, MVVM, StateFlow, Retrofit, Room, JUnit y Kover.
 
-<<<<<<< HEAD
-## Administración de cuentas
-
-Configura la primera cuenta `admin@huerto.cl` siguiendo el README del backend. Inicia sesión y abre **Más → Gestionar cuentas**. Elige el perfil, completa los datos y confirma la contraseña. La cuenta se guarda en el servidor y el estudiante nuevo queda disponible para asignarle tareas.
-
-El administrador también puede gestionar sectores, cultivos, tareas, revisiones, reportes y lecturas desde las mismas pantallas del docente. El registro público crea cuentas de estudiante.
-
-## Cuentas de demostración
-=======
 ## Ejecutar la aplicación
->>>>>>> 0b1145811284a8659a4f35e0b6139675a0ba4688
 
 1. Inicia MySQL en XAMPP y luego Spring Boot. Sigue el [README del backend](https://github.com/Hikarifire/Back_Huerto).
 2. Abre esta carpeta en **Android Studio** y sincroniza el proyecto con Gradle. La compilación usa el **SDK Android 36.1**. La app requiere **Android 8.0 (API 26)** o superior.
@@ -29,20 +19,9 @@ El administrador también puede gestionar sectores, cultivos, tareas, revisiones
 
 | Rol | Funciones |
 |---|---|
-<<<<<<< HEAD
-| Sesiones | `POST /api/auth/login`, `POST /api/auth/registro`, `GET /api/auth/me`, `POST /api/auth/logout` |
-| Alta de cuentas | `POST /api/usuarios/cuentas/DOCENTE` y `POST /api/usuarios/cuentas/ALUMNO`, solo `ADMIN` |
-| Usuarios | `GET /api/usuarios/estudiantes` |
-| Sectores, cultivos y tareas | `GET/POST /api/{recurso}`, `GET/PUT/DELETE /api/{recurso}/{id}` |
-| Tareas y evidencias | `POST /api/tareas/{id}/iniciar`, `GET/POST /api/tareas/{id}/evidencias`, `POST /api/evidencias/{id}/revision`, `GET /api/evidencias/{id}/foto` |
-| Reportes | `GET/POST /api/reportes`, `PATCH /api/reportes/{id}`, `GET /api/reportes/{id}/foto` |
-| Sensores simulados | `GET /api/lecturas`, `POST /api/lecturas/simuladas` |
-| Open-Meteo | `GET https://api.open-meteo.com/v1/forecast` con coordenadas fijas de San Bernardo, `current=temperature_2m,relative_humidity_2m,precipitation` y `timezone=America/Santiago` |
-=======
 | Administrador | Gestiona sectores, cultivos, tareas, evidencias, reportes y lecturas. En **Más → Gestionar cuentas**, puede crear docentes y estudiantes. |
 | Docente | Gestiona los recursos del huerto, asigna tareas, revisa evidencias y atiende reportes. |
 | Estudiante | Consulta sus tareas, registra avances, adjunta fotos y envía evidencias. Puede reportar problemas del huerto. |
->>>>>>> 0b1145811284a8659a4f35e0b6139675a0ba4688
 
 Room guarda los borradores de evidencia por usuario y tarea. Las tareas y evidencias enviadas se guardan en el servidor. La app permite tomar una foto con la cámara o elegirla desde la galería.
 

@@ -170,7 +170,7 @@ fun DetalleReporte(reporte: Reporte, estado: HuertoUiState, store: HuertoStore, 
         reporte.fotoUrl?.let { FotoRemota(it, store) }
         reporte.seguimiento?.let { Text("Seguimiento · $it") }
         reporte.atendidoPor?.let { Text("Última revisión de $it") }
-        if (estado.sesion?.usuario?.esDocente == true) {
+        if (estado.sesion?.usuario?.puedeGestionarHuerto == true) {
             Selector("Estado", Reglas.estadosDeReporte.map { it to etiqueta(it) }, situacion, estado.campos["estado"]) {
                 situacion = it
             }

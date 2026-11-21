@@ -20,6 +20,7 @@ object Reglas {
 
     fun validar(accion: Accion, datos: Datos): Map<String, String> = buildMap {
         when (accion) {
+            is Accion.CrearCuenta -> putAll(acceso(accion.datos.copy(nombre = accion.datos.nombre.orEmpty())))
             is Accion.GuardarSector -> with(accion.datos) {
                 texto("nombre", nombre, 100)
                 texto("ubicación", ubicacion, 150)

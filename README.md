@@ -10,6 +10,12 @@ Aplicación con Kotlin, Jetpack Compose, Room y Retrofit. Integrantes: Giovanni 
 
 Backend en https://github.com/Hikarifire/Back_Huerto.
 
+## Administración de cuentas
+
+Configura la primera cuenta `admin@huerto.cl` siguiendo el README del backend. Inicia sesión y abre **Más → Gestionar cuentas**. Elige el perfil, completa los datos y confirma la contraseña. La cuenta se guarda en el servidor y el estudiante nuevo queda disponible para asignarle tareas.
+
+El administrador también puede gestionar sectores, cultivos, tareas, revisiones, reportes y lecturas desde las mismas pantallas del docente. El registro público crea cuentas de estudiante.
+
 ## Cuentas de demostración
 
 | Rol | Correo | Clave ficticia |
@@ -28,6 +34,7 @@ Android usa Kotlin, Jetpack Compose, MVVM, StateFlow, Room y Retrofit. MySQL alm
 | Componente | Operaciones |
 |---|---|
 | Sesiones | `POST /api/auth/login`, `POST /api/auth/registro`, `GET /api/auth/me`, `POST /api/auth/logout` |
+| Alta de cuentas | `POST /api/usuarios/cuentas/DOCENTE` y `POST /api/usuarios/cuentas/ALUMNO`, solo `ADMIN` |
 | Usuarios | `GET /api/usuarios/estudiantes` |
 | Sectores, cultivos y tareas | `GET/POST /api/{recurso}`, `GET/PUT/DELETE /api/{recurso}/{id}` |
 | Tareas y evidencias | `POST /api/tareas/{id}/iniciar`, `GET/POST /api/tareas/{id}/evidencias`, `POST /api/evidencias/{id}/revision`, `GET /api/evidencias/{id}/foto` |

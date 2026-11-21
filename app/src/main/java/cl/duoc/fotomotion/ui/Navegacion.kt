@@ -94,7 +94,7 @@ fun Huerto(vm: HuertoViewModel = viewModel()) {
                     composable("Sectores") {
                         Pagina {
                             Encabezado("Sectores")
-                            if (usuario.esDocente) Guardar("Nuevo sector", !estado.ocupado) { navegar("sectorEditar/0") }
+                            if (usuario.puedeGestionarHuerto) Guardar("Nuevo sector", !estado.ocupado) { navegar("sectorEditar/0") }
                             if (datos.sectores.isEmpty()) Text("Todavía no hay sectores registrados.")
                             datos.sectores.forEach { sector ->
                                 Tarjeta(sector.nombre, listOfNotNull(sector.ubicacion, if (sector.activo) "Activo" else "Inactivo")
@@ -111,7 +111,7 @@ fun Huerto(vm: HuertoViewModel = viewModel()) {
                                 Encabezado(sector.nombre, sector.ubicacion)
                                 Text(sector.descripcion.orEmpty())
                                 Text(if (sector.activo) "Activo" else "Inactivo")
-                                if (usuario.esDocente) {
+                                if (usuario.puedeGestionarHuerto) {
                                     Guardar("Editar sector", !estado.ocupado) { navegar("sectorEditar/${sector.id}") }
                                     Borrar("Eliminar sector", !estado.ocupado) {
                                         ejecutar(Accion.Eliminar(Recurso.SECTOR, sector.id)) { nav.popBackStack() }
@@ -126,12 +126,12 @@ fun Huerto(vm: HuertoViewModel = viewModel()) {
                     }
                     composable("sectorEditar/{id}") { e ->
                         val sector = datos.sectores.find { it.id == e.arguments?.getString("id")?.toLongOrNull() }
-                        if (usuario.esDocente) EditorSector(sector, estado) { ejecutar(it) { nav.popBackStack() } }
+                        if (usuario.puedeGestionarHuerto) EditorSector(sector, estado) { ejecutar(it) { nav.popBackStack() } }
                     }
                     composable("Cultivos") {
                         Pagina {
                             Encabezado("Cultivos")
-                            if (usuario.esDocente) Guardar("Registrar cultivo", !estado.ocupado) { navegar("cultivoEditar/0") }
+                            if (usuario.puedeGestionarHuerto) Guardar("Registrar cultivo", !estado.ocupado) { navegar("cultivoEditar/0") }
                             if (datos.cultivos.isEmpty()) Text("Todavía no hay cultivos registrados.")
                             datos.cultivos.forEach { planta ->
                                 Tarjeta(planta.nombre, "${planta.sectorNombre} · ${etiqueta(planta.estado)}") {
@@ -143,16 +143,16 @@ fun Huerto(vm: HuertoViewModel = viewModel()) {
                     composable("cultivo/{id}") { e ->
                         val cultivo = datos.cultivos.find { it.id == e.arguments?.getString("id")?.toLongOrNull() }
                         if (cultivo == null) Pagina { Text("Cultivo no disponible.") }
-                        else DetalleCultivo(cultivo, usuario.esDocente, estado.ocupado,
+                        else DetalleCultivo(cultivo, usuario.puedeGestionarHuerto, estado.ocupado,
                             editar = { navegar("cultivoEditar/${cultivo.id}") },
                             borrar = { ejecutar(Accion.Eliminar(Recurso.CULTIVO, cultivo.id)) { nav.popBackStack() } })
                     }
                     composable("cultivoEditar/{id}") { e ->
                         val cultivo = datos.cultivos.find { it.id == e.arguments?.getString("id")?.toLongOrNull() }
-                        if (usuario.esDocente) EditorCultivo(cultivo, estado) { ejecutar(it) { nav.popBackStack() } }
+                        if (usuario.puedeGestionarHuerto) EditorCultivo(cultivo, estado) { ejecutar(it) { nav.popBackStack() } }
                     }
                     composable("Tareas") {
-                        ListaTareas(estado, usuario.esDocente, hoy, ::navegar)
+                        ListaTareas(estado, usuario.puedeGestionarHuerto, hoy, ::navegar)
                     }
                     composable("tarea/{id}") { e ->
                         val tarea = datos.tareas.find { it.id == e.arguments?.getString("id")?.toLongOrNull() }
@@ -164,13 +164,13 @@ fun Huerto(vm: HuertoViewModel = viewModel()) {
                     }
                     composable("tareaEditar/{id}") { e ->
                         val tarea = datos.tareas.find { it.id == e.arguments?.getString("id")?.toLongOrNull() }
-                        if (usuario.esDocente) EditorTarea(tarea, estado) { ejecutar(it) { nav.popBackStack() } }
+                        if (usuario.puedeGestionarHuerto) EditorTarea(tarea, estado) { ejecutar(it) { nav.popBackStack() } }
                     }
                     composable("revisar/{tarea}/{id}") { e ->
                         val tarea = e.arguments?.getString("tarea")?.toLongOrNull()
                         val id = e.arguments?.getString("id")?.toLongOrNull()
                         val evidencia = tarea?.let { estado.evidencia[it] }?.find { it.id == id }
-                        if (usuario.esDocente && evidencia != null) EditorRevision(evidencia, estado, store) {
+                        if (usuario.puedeGestionarHuerto && evidencia != null) EditorRevision(evidencia, estado, store) {
                             ejecutar(it) { nav.popBackStack() }
                         }
                     }
@@ -213,9 +213,17 @@ fun Huerto(vm: HuertoViewModel = viewModel()) {
                         LaunchedEffect(Unit) { store.clima() }
                         ClimaPantalla(estado) { scope.launch { store.clima() } }
                     }
+                    composable("cuentas") {
+                        if (usuario.esAdministrador) {
+                            EditorCuenta(estado) { ejecutar(it) { nav.popBackStack() } }
+                        }
+                    }
                     composable("Más") {
                         Pagina {
                             Encabezado("Más")
+                            if (usuario.esAdministrador) {
+                                Tarjeta("Gestionar cuentas", "Registra docentes y estudiantes") { navegar("cuentas") }
+                            }
                             listOf("Cultivos", "Reportes", "Alertas", "Historial", "Lecturas", "Clima").forEach {
                                 Tarjeta(it, alTocar = { navegar(it) })
                             }
@@ -238,7 +246,7 @@ private fun Ingreso(estado: HuertoUiState, entrar: (Acceso) -> Unit) {
 
     Pagina {
         Encabezado(if (registro) "Crear cuenta" else "Bienvenido al huerto",
-            if (registro) "El registro crea una cuenta de estudiante." else "Ingresa con tu cuenta de docente o estudiante.")
+            if (registro) "El registro crea una cuenta de estudiante." else "Ingresa con tu cuenta del huerto.")
         AnimatedVisibility(registro) { Campo("Nombre", nombre, { nombre = it }, estado.campos["nombre"]) }
         Campo("Correo", correo, { correo = it }, estado.campos["correo"], teclado = KeyboardType.Email)
         Campo("Contraseña", clave, { clave = it }, estado.campos["contraseña"], teclado = KeyboardType.Password, secreto = true)
@@ -254,11 +262,16 @@ private fun Ingreso(estado: HuertoUiState, entrar: (Acceso) -> Unit) {
 @Composable
 private fun Inicio(usuario: Usuario, datos: Datos, hoy: LocalDate, navegar: (String) -> Unit) {
     Pagina {
-        Encabezado("Hola, ${usuario.nombre}", if (usuario.esDocente) "Perfil docente" else "Perfil estudiante")
+        val perfil = when {
+            usuario.esAdministrador -> "Perfil administrador"
+            usuario.esDocente -> "Perfil docente"
+            else -> "Perfil estudiante"
+        }
+        Encabezado("Hola, ${usuario.nombre}", perfil)
         val pendientes = datos.tareas.count { it.estado in setOf("PENDIENTE", "EN_DESARROLLO", "RECHAZADA") }
         val porRevisar = datos.tareas.count { it.estado == "EN_REVISION" }
-        Tarjeta(if (usuario.esDocente) "Tareas del huerto" else "Mis tareas",
-            if (usuario.esDocente) "$pendientes activas · $porRevisar por revisar" else "$pendientes activas · $porRevisar enviadas") {
+        Tarjeta(if (usuario.puedeGestionarHuerto) "Tareas del huerto" else "Mis tareas",
+            if (usuario.puedeGestionarHuerto) "$pendientes activas · $porRevisar por revisar" else "$pendientes activas · $porRevisar enviadas") {
             navegar("Tareas")
         }
         val alertas = Reglas.alertas(datos, hoy)

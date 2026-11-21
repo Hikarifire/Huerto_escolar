@@ -42,7 +42,7 @@ class RepositorioHuerto(contexto: Context) : Repositorio {
             val tareas = async { api.tareas(token) }
             val reportes = async { api.reportes(token) }
             val lecturas = async { api.lecturas(token) }
-            val estudiantes = async { if (sesion.usuario.esDocente) api.estudiantes(token) else emptyList() }
+            val estudiantes = async { if (sesion.usuario.puedeGestionarHuerto) api.estudiantes(token) else emptyList() }
             Datos(sectores.await(), cultivos.await(), tareas.await(), estudiantes.await(), reportes.await(), lecturas.await())
         }
     }
@@ -51,6 +51,7 @@ class RepositorioHuerto(contexto: Context) : Repositorio {
         val token = bearer(sesion.token)
         remoto {
             when (accion) {
+                is Accion.CrearCuenta -> api.crearCuenta(token, accion.rol.name, accion.datos)
                 is Accion.GuardarSector -> if (accion.id == null) api.crearSector(token, accion.datos)
                     else api.actualizarSector(token, accion.id, accion.datos)
                 is Accion.GuardarCultivo -> if (accion.id == null) api.crearCultivo(token, accion.datos)

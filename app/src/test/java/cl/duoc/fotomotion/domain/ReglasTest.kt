@@ -20,6 +20,14 @@ class ReglasTest {
     private val tareaBase = TareaForm("Trabajo", "Explicación", "2026-11-21", 1, 2, 3, "RIEGO")
 
     @Test
+    fun altaDeCuentaUsaValidacionDeRegistro() {
+        val valido = Accion.CrearCuenta(RolNuevaCuenta.DOCENTE, Acceso("alta@huerto.cl", "ClaveDemo123", "Docente"))
+        assertTrue(Reglas.validar(valido, Datos()).isEmpty())
+        val invalido = Accion.CrearCuenta(RolNuevaCuenta.ALUMNO, Acceso("invalido", "corta"))
+        assertEquals(setOf("correo", "contraseña", "nombre"), Reglas.validar(invalido, Datos()).keys)
+    }
+
+    @Test
     fun accesoAdmiteRegistroValidoYRechazaDatosInvalidos() {
         assertTrue(Reglas.acceso(Acceso(" u@escuela.cl ", "clave123", "Estudiante")).isEmpty())
         assertEquals(setOf("correo", "contraseña", "nombre"), Reglas.acceso(Acceso("a@", "corto", "")).keys)

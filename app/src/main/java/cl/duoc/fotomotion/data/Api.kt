@@ -11,6 +11,9 @@ import retrofit2.http.*
 private const val AUTH = "Authorization"
 
 interface HuertoApi {
+    @POST("api/usuarios/cuentas/{rol}")
+    suspend fun crearCuenta(@Header(AUTH) token: String, @Path("rol") rol: String,
+                            @Body datos: Acceso): Usuario
     @POST("api/auth/login") suspend fun login(@Body datos: Acceso): Sesion
     @POST("api/auth/registro") suspend fun registro(@Body datos: Acceso): Sesion
     @GET("api/auth/me") suspend fun perfil(@Header(AUTH) token: String): Usuario

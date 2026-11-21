@@ -42,7 +42,7 @@ fun ListaTareas(estado: HuertoUiState, docente: Boolean, hoy: LocalDate, navegar
 @Composable
 fun DetalleTarea(tarea: Tarea, estado: HuertoUiState, store: HuertoStore, hoy: LocalDate,
                  navegar: (String) -> Unit, guardar: (Accion) -> Unit) {
-    val docente = estado.sesion?.usuario?.esDocente == true
+    val docente = estado.sesion?.usuario?.puedeGestionarHuerto == true
     val scope = rememberCoroutineScope()
     val evidencias = estado.evidencia[tarea.id].orEmpty()
     var entrega by rememberSaveable(tarea.id) { mutableStateOf("") }
@@ -109,7 +109,7 @@ fun DetalleTarea(tarea: Tarea, estado: HuertoUiState, store: HuertoStore, hoy: L
 fun Lecturas(estado: HuertoUiState, crear: (Accion) -> Unit) {
     Pagina {
         Encabezado("Lecturas de sensores", "Datos simulados para la demostración académica.")
-        if (estado.sesion?.usuario?.esDocente == true) {
+        if (estado.sesion?.usuario?.puedeGestionarHuerto == true) {
             Guardar("Registrar lectura simulada", !estado.ocupado) {
                 crear(Accion.Simular(LecturaForm(
                     humedad = (38..75).random().toDouble(),

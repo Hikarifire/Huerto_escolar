@@ -2,6 +2,8 @@ package cl.duoc.fotomotion.domain
 
 data class Usuario(val id: Long, val nombre: String, val correo: String, val tipoCuenta: String) {
     val esDocente get() = tipoCuenta == "DOCENTE"
+    val esAdministrador get() = tipoCuenta == "ADMIN"
+    val puedeGestionarHuerto get() = esDocente || esAdministrador
 }
 
 data class Sesion(val token: String, val usuario: Usuario)
@@ -69,7 +71,13 @@ enum class Recurso(val ruta: String) {
     SECTOR("sectores"), CULTIVO("cultivos"), TAREA("tareas")
 }
 
+enum class RolNuevaCuenta(val etiqueta: String) {
+    ALUMNO("Estudiante"),
+    DOCENTE("Docente")
+}
+
 sealed interface Accion {
+    data class CrearCuenta(val rol: RolNuevaCuenta, val datos: Acceso) : Accion
     data class GuardarSector(val id: Long?, val datos: SectorForm) : Accion
     data class GuardarCultivo(val id: Long?, val datos: CultivoForm) : Accion
     data class GuardarTarea(val id: Long?, val datos: TareaForm) : Accion
